@@ -1,0 +1,46 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@import "@tailwindcss/forms";
+
+.alice-carousel__wrapper {
+  height: 100%;
+}
+
+.carousel-images {
+  aspect-ratio: 22/9;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: #fff;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #aaa;
+  border-radius: 10px;
+}
+
+.home-section-card-shadow {
+  box-shadow: rgba(17, 17, 26, 0.05) 0px 1px 0px,
+    rgba(17, 17, 26, 0.1) 0px 0px 8px;
+}
+
+.home-section-card-shadow1 {
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 50px;
+}
+
+::-webkit-file-upload-button {
+  color: white;
+  background-color: #9775fa;
+  background-color: rgb(79 70 229);
+  outline: none;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 10px;
+  font-size: 14px;
+}

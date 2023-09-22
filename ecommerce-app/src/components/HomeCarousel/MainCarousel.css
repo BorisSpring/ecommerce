@@ -1,0 +1,17 @@
+.alice-carousel__wrapper {
+  height: 200px;
+}
+
+.carousel-images {
+  aspect-ratio: 22/9;
+  height: 400px;
+}
+
+@media (min-width: 1000px) {
+  .carousel-images {
+    height: 800px;
+  }
+  .alice-carousel__wrapper {
+    height: 800px;
+  }
+}
