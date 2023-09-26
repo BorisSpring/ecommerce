@@ -55,15 +55,17 @@ public class OrderServiceImpl implements OrderService {
 	public Order createOrder(User user, OrderRequest req) throws OrderException, CartItemException, CartException {
 	
 		
-		
-		Adress userAdress = adresRepo.findByAdressAndCityAndCountryAndPostalCodeAndStateAndUserId(req.getAdres().getAdress(), req.getAdres().getCity(), req.getAdres().getCountry(), req.getAdres().getPostalCode(), req.getAdres().getState(), user.getId());
-			
-			if(userAdress == null) {
-				userAdress = new Adress();
-				userAdress.setUser(user);
-				userAdress = adresRepo.save(req.getAdres());
-				user.getAdress().add(userAdress);
-			}
+				Adress adress;
+			System.out.println(req.getId());
+				if(req.getId() > 0 ) {
+					adress = adresRepo.findById(req.getId()).get();
+				}else {
+					adress = new Adress();
+					adress.setUser(user);
+					adress = adresRepo.save(req.getAdres());
+					user.getAdress().add(adress);
+				}
+				
 			
 			Cart cart = user.getCart();
 			
@@ -92,7 +94,7 @@ public class OrderServiceImpl implements OrderService {
 				Order order = new Order();
 				order.setMobileNumber(number);
 				order.setUser(user);
-				order.setAdress(userAdress);
+				order.setAdress(adress);
 				order.setCreatedAt(LocalDateTime.now());
 				order.setDiscount(cart.getDiscount());
 				order.setTotalDiscountedPrice(cart.getTotalDiscountPrice());
@@ -265,6 +267,16 @@ public class OrderServiceImpl implements OrderService {
 	public Integer getSum() {
 		System.out.println(orderRepo.getSum());
 		 return orderRepo.getSum();
+	}
+
+	@Override
+	public void returnedOrder(int orderId) {
+		 
+		Order order = findOrderyId(orderId);
+		
+		order.setOrderStatus("RETURNED");
+		orderRepo.save(order);
+		
 	}
 	
 	

@@ -11,10 +11,17 @@ public class OrderRequest {
 	private Adress adres;
 	private String firstName;
 	private String lastName;
+	private int id;
 	
 	
 	
 	
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
 	public String getFirstName() {
 		return firstName;
 	}
@@ -43,11 +50,7 @@ public class OrderRequest {
 	public OrderRequest() {
 
 	}
-	@Override
-	public String toString() {
-		return "OrderRequest [mobileNumber=" + mobileNumber + ", adres=" + adres + ", firstName=" + firstName
-				+ ", lastName=" + lastName + "]";
-	}
+	
 	
 	
 	

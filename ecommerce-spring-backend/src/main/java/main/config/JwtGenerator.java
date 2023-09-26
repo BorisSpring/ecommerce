@@ -29,6 +29,7 @@ public class JwtGenerator extends OncePerRequestFilter {
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 		
+		System.out.println("generator");
 		org.springframework.security.core.Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		if( auth != null) {
 			try {
@@ -42,7 +43,8 @@ public class JwtGenerator extends OncePerRequestFilter {
 						.claim("authorities" , populateAuthorities(auth.getAuthorities()))
 						.signWith(key)
 						.compact();
-				
+
+
 				response.setHeader("Authorization", jwt);						
 				
 			} catch (Exception e) {

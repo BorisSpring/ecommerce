@@ -82,6 +82,7 @@ public class Product {
 	private String title;
 	private String description;
 	private String brand;
+	@Column(name="created_At")
 	private LocalDateTime createdAt;
 
 	

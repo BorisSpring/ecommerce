@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -19,6 +20,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import jakarta.servlet.http.HttpServletRequest;
 
 @Configuration
+@EnableMethodSecurity
 public class SecurityConfig {
 	
 	@Bean
@@ -31,10 +33,10 @@ public class SecurityConfig {
 		sessionManagement((session) ->
 			session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 		.authorizeHttpRequests((authorize) -> authorize
-				.requestMatchers(HttpMethod.POST, "/api/products/findCategories", "/api/products/similar/{itemName}/{numberOfElements}").permitAll()
+				.requestMatchers(HttpMethod.POST, "/api/products/findCategories", "/api/products/similar/{itemName}/{numberOfElements}" , "/api/products/section/itemName/{itemNameId}").permitAll()
 				.requestMatchers(HttpMethod.GET, "/api/products/category/{category}", "/api/products/search/{query}" , "/api/products/{id}", "/api/products/all").permitAll()
 				.requestMatchers("/auth/login", "/auth/signup").permitAll()
-				.requestMatchers(HttpMethod.GET, "/api/orders", "/api/ratings/findAll" , "/api/reviews").hasAuthority("ADMIN")
+				.requestMatchers(HttpMethod.GET, "/api/orders", "/api/ratings/findAll" , "/api/reviews").authenticated()
 				.requestMatchers(HttpMethod.DELETE, "/api/orders", "/api/products/{id}", "/api/ratings" , "/api/reviews").hasAuthority("ADMIN")
 				.requestMatchers(HttpMethod.POST, "/api/orders/{orderId}/cancel", "/api/orders/delivered", "/api/orders/ship" , "/api/products").hasAuthority("ADMIN")
 				.requestMatchers("/api/**").authenticated()

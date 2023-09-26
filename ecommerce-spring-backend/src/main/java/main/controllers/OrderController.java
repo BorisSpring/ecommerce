@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -38,13 +39,6 @@ public class OrderController {
 	}
 
 
-	
-	@PostMapping("/revenue")
-	public ResponseEntity<?> getTotalRevenueHandler(){
-		
-		return ResponseEntity.status(HttpStatus.OK).body(orderService.getSum());
-	}
-
 	@PostMapping("/userProfile")
 	public ResponseEntity<?> getUserProfileHandler(@RequestHeader("Authorization") String jwt){
 		
@@ -60,8 +54,10 @@ public class OrderController {
 	}
 	
 	
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'admin')")
 	@GetMapping("")
 	public ResponseEntity<Page<Order>> getAllOrderHander(@RequestParam(defaultValue="1")Integer page, @RequestParam(defaultValue="12") Integer pageSize){
+			
 		return ResponseEntity.status(HttpStatus.OK).body(orderService.getAllOrders(page, pageSize));
 	}
 	
@@ -101,6 +97,13 @@ public class OrderController {
 	public ResponseEntity<Boolean>  confirmedOrderHandler(@PathVariable int orderId){
 		
 		return ResponseEntity.status(HttpStatus.OK).body(orderService.confirmedOrder(orderId));
+	}
+	
+	@PostMapping("/{orderId}/retuned")
+	public ResponseEntity<?> returnedOrderHandler(@PathVariable("orderId") int orderId){
+		orderService.returnedOrder(orderId);
+		
+		return ResponseEntity.status(HttpStatus.OK).body(true);
 	}
 	
 	

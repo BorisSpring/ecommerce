@@ -1,5 +1,6 @@
 package main.controllers;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -14,7 +15,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -28,7 +28,6 @@ import main.repository.UserRepository;
 import main.requests.LoginRequest;
 import main.response.AuthResponse;
 import main.service.CartService;
-import main.service.UserService;
 
 @RestController
 @RequestMapping("/auth")
@@ -112,7 +111,9 @@ public class AuthController {
 			throw new BadCredentialsException("Invalid Credentials");
 		}
 		
-		List<GrantedAuthority> authorities = Arrays.asList(new SimpleGrantedAuthority("admin"));
+		
+		List<GrantedAuthority> authorities  = new ArrayList<>();
+		authorities.add(new SimpleGrantedAuthority(user.getAuthority().getAuthority()));
 		
 		Authentication auth = new UsernamePasswordAuthenticationToken(user.getEmail(), null, authorities);
 		SecurityContextHolder.getContext().setAuthentication(auth);

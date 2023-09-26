@@ -36,4 +36,6 @@ public interface OrderService {
 	public boolean deleteOrderAdmin(int orderId) throws OrderException;
 
 	public Integer getSum();
+
+	public void returnedOrder(int orderId);
 }

@@ -40,11 +40,11 @@ public class ProductController {
 
 	@GetMapping("/category/{category}")
 	public ResponseEntity<Page<Product>> findProductByCategoryHandler(@PathVariable("category") String category,
-																	  @RequestParam(required = false) List<String> colors, 
+																	  @RequestParam(required = false, name="color") List<String> color, 
 																	  @RequestParam(required = false) List<String> size ,
 																	  @RequestParam(required = false) List<String> price,
 																	  @RequestParam(required = false) List<Integer> discountRange, 
-																	  @RequestParam(required = false) String sort,  
+																	  @RequestParam(required = false, name="sortBy") String sortBy,  
 																	  @RequestParam(required = false) String stock, 
 																	  @RequestParam(defaultValue = "1") Integer page, 
 																	  @RequestParam(defaultValue = "12") Integer pageSize){
@@ -67,20 +67,29 @@ public class ProductController {
 		if(discountRange != null) {			
 			discountAbove = discountRange.stream().max(Integer::compareTo).orElse(null);
 		}
-		Page<Product> productsPage = productService.findAllProductsByFiltersAndSectionItemName(category, colors, size, minPrice, maxPrice, sort, stock, page, pageSize, discountAbove);
+		Page<Product> productsPage = productService.findAllProductsByFiltersAndSectionItemName(category, color, size, minPrice, maxPrice, sortBy, stock, page, pageSize, discountAbove);
 		
 		return ResponseEntity.status(HttpStatus.OK).body(productsPage);
 	}
 
-	//DODATI OVO
 	
-	@GetMapping("/search/{query}")
-	public ResponseEntity<List<Product>> findSearchedProducts(@PathVariable String query){
+	@GetMapping("/search/{searchQuery}")
+	public ResponseEntity<Page<Product>> findSearchedProducts(
+														@RequestParam(required=false, name="color") List<String >color, 
+														@PathVariable("searchQuery") String searchQuery ,
+														@RequestParam(defaultValue="1") Integer page ,
+														@RequestParam(defaultValue="12") Integer pageSize,
+														@RequestParam(required = false) List<String> size ,
+														@RequestParam(required = false) List<String> price, 
+														@RequestParam(required = false) List<Integer> discountRange,
+														@RequestParam(required = false) String sort,
+														@RequestParam(required = false) String stock){
 		
-		List<Product> products = productService.findProductByQuery(query);
 		
-		return ResponseEntity.status(HttpStatus.OK).body(products);
+		return ResponseEntity.status(HttpStatus.OK).body(productService.findProductByQuery(searchQuery, page, pageSize, color, size, price, discountRange, sort, stock));
 	}
+	
+
 	
 	@PostMapping("")
 	public ResponseEntity<?> handleCreateProduct(@RequestBody CreateProductRequest req){
@@ -112,7 +121,6 @@ public class ProductController {
 	@GetMapping("/{id}")
 	public ResponseEntity<ProductDetailsDTO> getProductDetails(@PathVariable int id){
 		
-		System.out.println("u metodi je");
 		return ResponseEntity.status(HttpStatus.OK).body(productService.findProductDetails(id));
 	}
 
@@ -131,5 +139,10 @@ public class ProductController {
 		return ResponseEntity.status(HttpStatus.OK).body(productService.findAllProducts(page, size));
 	}
 
-
+	@GetMapping("/section/itemName/{itemNameId}")
+	public ResponseEntity<List<Product>> get10ProductsWithSectionId(@PathVariable int itemNameId ){
+		
+		
+		return ResponseEntity.status(HttpStatus.OK).body(productService.get10ProductsWithSectionId(itemNameId));
+	}
 }

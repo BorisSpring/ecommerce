@@ -2,6 +2,7 @@ package main.service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -135,8 +136,6 @@ public class ProductServiceImpl implements ProductService {
 		
 		return "Product delted sucessfully";
 	}
-	
-	
 
 
 	@Override
@@ -149,8 +148,6 @@ public class ProductServiceImpl implements ProductService {
 		return opt.get();
 	}
 
-	
-
 
 	@Override
 	public Page<Product> findAllProductsByFiltersAndSectionItemName(String category, List<String> colors, List<String> sizes, Integer minPrice,
@@ -158,10 +155,9 @@ public class ProductServiceImpl implements ProductService {
 		
 		pageNumber = pageNumber - 1;
 		
-		List<Product> listOfProducts = productRepo.filterProducts(category, colors, minPrice, maxPrice, sort, discountRange);
-
+		List<Product> listOfProducts = productRepo.filterProducts(colors,category, colors, minPrice, maxPrice, sort, discountRange, sizes, sizes);
 		
-		
+		System.out.println(listOfProducts.size());
 		if(colors != null && !colors.isEmpty()) {
 			listOfProducts.stream().filter(product -> product.getColors().stream().anyMatch(color -> colors.contains(color))).collect(Collectors.toList());
 		}
@@ -198,12 +194,7 @@ public class ProductServiceImpl implements ProductService {
 
 	}
 
-	
-	
-	@Override
-	public List<Product> findProductByQuery(String query) {
-		return productRepo.findProductByQuery(query);
-	}
+
 
 	@Override
 	public boolean existsById(int productId)  {
@@ -268,5 +259,71 @@ public class ProductServiceImpl implements ProductService {
 		 
 	}
 
+	@Override
+	public Page<Product> findProductByQuery(String searchQuery, Integer page, Integer pageSize, List<String> colors,
+			List<String> size, List<String> price, List<Integer> discountRange, String sort, String stock) {
+		
+		page = page - 1;
+		searchQuery = searchQuery.replaceAll("-", " ");
+		Integer maxPrice = null;
+		Integer minPrice = null; 
+		
+		if(price != null) {
+		    List<Integer> priceRanges= price.stream()
+		    		.flatMap(priceRange -> Arrays.stream(priceRange.split("-")))
+		    		.mapToInt(Integer::parseInt)
+		    		.sorted()
+		    		.boxed()
+		    		.collect(Collectors.toList());
+			
+		    minPrice = priceRanges.get(0);
+		    maxPrice = priceRanges.get(priceRanges.size()-1);
+		}
+		
+		
+		Integer discountAbove = null;
+		
+		if(discountRange != null) {
+			discountAbove = discountRange.stream().max(Integer::compareTo).orElse(null);
+		}
+		
+		List <Product> searchedProducts = productRepo.findSearchedProducts(minPrice, maxPrice, discountAbove, colors, size,  searchQuery, colors, size, sort);
+		
+		
+		if(stock != null) {
+			if(stock == "in_stock") {
+				searchedProducts = searchedProducts.stream().filter(p -> p.getQuantity() > 0).collect(Collectors.toList());
+			}else {
+				searchedProducts = searchedProducts.stream().filter(p -> p.getQuantity() == 0).collect(Collectors.toList());
+			}
+		}
+		
+		if(searchedProducts.size() <= pageSize) {
+			return new PageImpl<>(searchedProducts);
+		}
+		
+		PageRequest pageable = PageRequest.of(page, pageSize);
+		int totalPages = (int) Math.ceil((double)searchedProducts.size() / pageSize );
+		int beginIndex =  page * pageSize;
+		int endIndex;
+		
+		
+		if((totalPages - 1) == page) {
+			endIndex = searchedProducts.size();
+		}else {
+			endIndex = beginIndex + pageSize;
+		}
+		
+		return new PageImpl<>(searchedProducts.subList(beginIndex, endIndex), pageable, searchedProducts.size());
+				
+	}
+
+	@Override
+	public List<Product> get10ProductsWithSectionId(int itemNameId) {
+		PageRequest request = PageRequest.of(0, 10);
+		 return sectionItemRepo.findProductsBySectionItemId(itemNameId, request);
+	}
+
+	
 
 }
