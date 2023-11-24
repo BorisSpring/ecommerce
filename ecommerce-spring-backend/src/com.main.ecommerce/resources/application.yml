@@ -1,0 +1,31 @@
+server:
+  port: 8080
+spring:
+#  h2:
+#    console:
+#      enabled: true
+  datasource:
+    password: loreana12345
+    username: root
+    url: jdbc:mysql://localhost:3306/ecommerce
+  #    url: jdbc:h2:mem:testdb
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+    generate-ddl: true
+#    database-platform: org.hibernate.dialect.H2Dialect
+    database: mysql
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+  #    database: h2
+
+
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+
+upload:
+  dir: images
+stripe:
+  apikey=sk_test_51Nqs5LHeveq0G9DVZIdJACluk0wDlhZsP9dZfB4JwE4CneoSPACzQnFkLIb2GXIhkE9zFiAs1Co6PfhK3SFyZS8v00Vic2XNKT:
